@@ -1,0 +1,20 @@
+Este programa foi desenvolvido para extrair informações de horários de entrada e saída de um arquivo PDF e salvá-las em um arquivo CSV.
+Funcionalidades:
+
+1) Seleção de Arquivo PDF: O programa permite que você selecione o arquivo PDF contendo os horários que deseja extrair.
+
+2) Processamento do PDF: Após selecionar o arquivo PDF, o programa lê o conteúdo do PDF e extrai as informações de datas e horários de entrada e saída.
+
+3) Criação de Arquivo CSV: Os horários extraídos são organizados em um arquivo CSV, onde cada linha representa um dia, incluindo a data, horários de entrada e horários de saída. Este arquivo é salvo em um diretório de sua escolha.
+
+Como Usar:
+1) Execute o programa (leitorPDF.exe).
+
+2) Clique no botão "Selecionar um arquivo PDF" e escolha o arquivo PDF contendo os horários que deseja extrair.
+
+3) Escolha o diretório onde deseja salvar o arquivo Excel resultante.
+
+4) Após a conclusão bem-sucedida, você receberá uma mensagem informando que o Excel foi criado com sucesso e onde ele foi salvo.
+
+Aviso: Este programa foi desenvolvido para fins educacionais e pode precisar de adaptações adicionais para atender a requisitos específicos do seu caso de uso.
+Desenvolvido por Daniel Sommer: https://github.com/danisommer

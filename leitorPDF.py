@@ -1,79 +1,48 @@
 import PyPDF2
+import csv
 import re
 import os
-import csv
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
-# Função para extrair horários de entrada e saída de um texto
-def extrair_horarios(texto):
-    padrao_horario = r"\d{2}:\d{2}"
-    horarios = re.findall(padrao_horario, texto)
-    return horarios
+# Função para extrair horários e datas de um pdf
+def extrair_datas_horarios(pdf_path):
+    dados = []
+    pdf = PyPDF2.PdfReader(open(pdf_path, "rb"))
 
-# Função para extrair todas as datas de uma página
-def extrair_datas_da_pagina(page_text):
-    padrao_data = r"\d{2}/\d{2}/\d{4}"
-    datas = re.findall(padrao_data, page_text)
-    return datas
-
-# Função para ler o PDF e extrair os horários
-def extrair_horarios_de_pdf(pdf_path):
-    horarios_por_dia = {}
-    
-    pdf_file = open(pdf_path, "rb")
-    pdf_reader = PyPDF2.PdfReader(pdf_file)
-
-    data = []
-    horarios1 = []
-    horarios2 = []
-    
-    for page_num in range(len(pdf_reader.pages)):
-        dif = 0
-        page = pdf_reader.pages[page_num]
+    i = 0
+    while i < len(pdf.pages):
+        page = pdf.pages[i]
         page_text = page.extract_text()
-        
-        datas_da_pagina = extrair_datas_da_pagina(page_text)
-        horarios_da_pagina = extrair_horarios(page_text)
+        lines = page_text.split('\n')
 
-        dif = int(len(datas_da_pagina) - len(horarios_da_pagina) / 4)
-        if dif > 0:
-            for _ in range(dif):
-                horarios1.append(("", ""))  # Adicione um par de horários em branco
-                horarios2.append(("", ""))
+        for line in lines:
+            data = None
+            horarios = []
             
-        for data in datas_da_pagina:
-            if horarios_da_pagina:  # Verifique se há horários disponíveis
-                horarios1 = horarios_da_pagina[:2]  # Captura os 2 primeiros horários
-                horarios_da_pagina = horarios_da_pagina[2:]  # Remove os horários capturados
-                horarios2 = horarios_da_pagina[:2]  # Captura os 2 horários seguintes ou vazios
-                horarios_da_pagina = horarios_da_pagina[2:]  # Remove os horários capturados ou mantém vazio
+            data = re.findall(r'\b\d{2}[/]\d{2}[/]\d{4}\b', line)
+            
+            if data:
+                # Use re.findall para encontrar todos os horários da linha
+                horarios_match = re.findall(r'\b\d{2}:\d{2}\b', line)
+                if horarios_match:
+                    horarios.extend(horarios_match)
 
-                if data not in horarios_por_dia:
-                    horarios_por_dia[data] = [] 
-                
-                if horarios1[0] and horarios1[1] and horarios2[0] and horarios2[1]:
-                    horarios_por_dia[data].append((horarios1[0], horarios1[1], horarios2[0], horarios2[1]))
-                elif horarios1[0] and horarios1[1]:
-                    horarios_por_dia[data].append((horarios1[0], horarios1[1], "", ""))
-                elif horarios2[0] and horarios2[1]:
-                    horarios_por_dia[data].append(("", "", horarios2[0], horarios2[1]))
-                else: 
-                    horarios_por_dia[data].append(("", "", "", ""))
-    
-    pdf_file.close()
-    
-    return horarios_por_dia
+                while len(horarios) < 4:
+                    horarios.append('')
+
+                dados.append(data + horarios)
+
+        i += 1
+
+    return dados
 
 # Função para salvar os horários em um arquivo CSV
-def salvar_horarios_em_csv(horarios, csv_path):
-    with open(csv_path, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(["Data", "Entrada 1", "Saída 1", "Entrada 2", "Saída 2"])
-        
-        for data, lista_horarios in horarios.items():
-            for entrada1, saida1, entrada2, saida2 in lista_horarios:
-                writer.writerow([data, entrada1, saida1, entrada2, saida2])
+def salvar_csv(dados, csv_path):
+    with open(csv_path, mode='w', newline='') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(["DATA", "ENTRADA 1", "SAIDA 1", "ENTRADA 2", "SAIDA 2"])
+        writer.writerows(dados)
 
 # Função para selecionar o arquivo PDF de entrada
 def selecionar_arquivo_pdf():
@@ -91,7 +60,7 @@ def encontrar_nome_unico(diretorio, nome_base, extensao):
         if not os.path.exists(f"{diretorio}\{novo_nome}"):
             return novo_nome
         contador += 1
-
+    
 # Função para selecionar o diretório de saída
 def selecionar_diretorio_saida():
     diretorio_saida = filedialog.askdirectory()
@@ -118,10 +87,10 @@ def processar_pdf():
             messagebox.showerror("Erro", "Erro ao abrir o arquivo PDF.")
             return
 
-        horarios = extrair_horarios_de_pdf(pdf_path)
+        dados = extrair_datas_horarios(pdf_path)
         csv_path = os.path.join(diretorio_saida, encontrar_nome_unico(diretorio_saida, csv_path_base, extensao_csv))
 
-        salvar_horarios_em_csv(horarios, csv_path)
+        salvar_csv(dados, csv_path)
 
         if os.path.exists(csv_path):
             messagebox.showinfo("Sucesso", "CSV criado com sucesso em: " + csv_path)
