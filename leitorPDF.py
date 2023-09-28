@@ -2,11 +2,12 @@ import PyPDF2
 import csv
 import re
 import os
+import var
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
 # Função para extrair horários e datas de um pdf
-def extrair_datas_horarios(pdf_path):
+def extrair_datas_horarios(pdf_path, numeroDeHorarios):
     dados = []
     pdf = PyPDF2.PdfReader(open(pdf_path, "rb"))
 
@@ -28,7 +29,7 @@ def extrair_datas_horarios(pdf_path):
                 if horarios_match:
                     horarios.extend(horarios_match)
 
-                while len(horarios) < 4:
+                while len(horarios) < numeroDeHorarios:
                     horarios.append('')
 
                 dados.append(data + horarios)
@@ -68,9 +69,13 @@ def selecionar_diretorio_saida():
         return diretorio_saida
     else:
         return None
+    
+def selecionar_numero():
+    selected_number = var.get()
+    processar_pdf(selected_number)
 
 # Função principal para processar o PDF
-def processar_pdf():
+def processar_pdf(numeroDeHorarios):
     pdf_path = selecionar_arquivo_pdf()
     
     if pdf_path:
@@ -87,7 +92,7 @@ def processar_pdf():
             messagebox.showerror("Erro", "Erro ao abrir o arquivo PDF.")
             return
 
-        dados = extrair_datas_horarios(pdf_path)
+        dados = extrair_datas_horarios(pdf_path, numeroDeHorarios)
         csv_path = os.path.join(diretorio_saida, encontrar_nome_unico(diretorio_saida, csv_path_base, extensao_csv))
 
         salvar_csv(dados, csv_path)
@@ -98,21 +103,43 @@ def processar_pdf():
             messagebox.showerror("Erro", "Erro, não foi possível criar o CSV.")
 
 
+def chamar_processar_pdf():
+    valor = int(valor_selecionado.get())
+    processar_pdf(valor)
+
+# Configuração da janela principal
 root = tk.Tk()
 root.title("Extrair Horários de PDF")
-root.geometry("380x135+562+320")  # Centralize a janela e defina a posição
-root.resizable(False, False)  # Bloquear altura e largura da janela
+root.geometry("400x150")
+root.resizable(False, False)
+root.configure(bg='#f2f2f2')  # Define a cor de fundo da janela
 
-header_label = tk.Label(root, text="Extrair Horários de PDF", font=("Arial", 16))
+# Cabeçalho
+header_label = tk.Label(root, text="Extrair Horários de PDF", font=("Arial", 20), bg='#f2f2f2')
 header_label.pack(pady=10)
 
-frame = tk.Frame(root)
+# Frame para os widgets
+frame = tk.Frame(root, bg='#f2f2f2')
 frame.pack(padx=20, pady=10)
 
-select_pdf_button = tk.Button(frame, text="Selecionar PDF", command=processar_pdf)
-select_pdf_button.pack(side="left")
+# Lista de opções para o OptionMenu
+opcoes = [2, 4]
 
-exit_button = tk.Button(frame, text="Sair", command=root.quit)
-exit_button.pack(side="right")
+# Variável para armazenar a opção selecionada
+valor_selecionado = tk.StringVar(root)
+valor_selecionado.set(opcoes[1])  # Defina o valor inicial
+
+# Crie o OptionMenu e vincule-o à variável valor_selecionado
+option_menu = tk.OptionMenu(frame, valor_selecionado, *opcoes)
+option_menu.configure(font=("Arial", 12), bg='#f2f2f2', width=5)
+option_menu.pack(side="left", padx=10)
+
+# Botão para selecionar PDF
+select_pdf_button = tk.Button(frame, text="Selecionar PDF", command=chamar_processar_pdf, font=("Arial", 12), bg='#007BFF', fg='white')
+select_pdf_button.pack(side="left", padx=10)
+
+# Botão para sair
+exit_button = tk.Button(frame, text="Sair", command=root.quit, font=("Arial", 12), bg='#FF4500', fg='white')
+exit_button.pack(side="right", padx=10)
 
 root.mainloop()

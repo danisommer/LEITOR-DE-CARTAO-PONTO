@@ -10,11 +10,13 @@ Funcionalidades:
 Como Usar:
 1) Execute o programa (leitorPDF.exe).
 
-2) Clique no botão "Selecionar um arquivo PDF" e escolha o arquivo PDF contendo os horários que deseja extrair.
+2) Escolha quandos horários tem por dia no cartão ponto que deseja ler. 2 horários, 1 de entrada e 1 de saída, ou 4 horários, 2 de entradas e 2 de saídas.
 
-3) Escolha o diretório onde deseja salvar o arquivo Excel resultante.
+3) Clique no botão "Selecionar um arquivo PDF" e escolha o arquivo PDF contendo os horários que deseja extrair.
 
-4) Após a conclusão bem-sucedida, você receberá uma mensagem informando que o Excel foi criado com sucesso e onde ele foi salvo.
+4) Escolha o diretório onde deseja salvar o arquivo CSV resultante.
+
+5) Após a conclusão bem-sucedida, você receberá uma mensagem informando que o nome do arquivo e onde ele foi salvo.
 
 Aviso: Este programa foi desenvolvido para fins educacionais e pode precisar de adaptações adicionais para atender a requisitos específicos do seu caso de uso.
 Desenvolvido por Daniel Sommer: https://github.com/danisommer
