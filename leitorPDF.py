@@ -102,44 +102,28 @@ def processar_pdf(numeroDeHorarios):
         else:
             messagebox.showerror("Erro", "Erro, não foi possível criar o CSV.")
 
-
+# Função para chamar processar_pdf diretamente pelo botão
 def chamar_processar_pdf():
     valor = int(valor_selecionado.get())
     processar_pdf(valor)
 
 # Configuração da janela principal
 root = tk.Tk()
-root.title("Extrair Horários de PDF")
-root.geometry("400x150")
+root.title("LeitorPDF")
+root.geometry("435x125")
 root.resizable(False, False)
-root.configure(bg='#f2f2f2')  # Define a cor de fundo da janela
+root.configure(bg='#f2f2f2')
 
 # Cabeçalho
-header_label = tk.Label(root, text="Extrair Horários de PDF", font=("Arial", 20), bg='#f2f2f2')
+header_label = tk.Label(root, text="Extrair dados de PDF", font=("Calibri", 25), bg='#f2f2f2')
 header_label.pack(pady=10)
-
-# Frame para os widgets
-frame = tk.Frame(root, bg='#f2f2f2')
-frame.pack(padx=20, pady=10)
-
-# Lista de opções para o OptionMenu
-opcoes = [2, 4]
 
 # Variável para armazenar a opção selecionada
 valor_selecionado = tk.StringVar(root)
-valor_selecionado.set(opcoes[1])  # Defina o valor inicial
-
-# Crie o OptionMenu e vincule-o à variável valor_selecionado
-option_menu = tk.OptionMenu(frame, valor_selecionado, *opcoes)
-option_menu.configure(font=("Arial", 12), bg='#f2f2f2', width=5)
-option_menu.pack(side="left", padx=10)
+valor_selecionado.set("4")  # Defina o valor inicial como "2"
 
 # Botão para selecionar PDF
-select_pdf_button = tk.Button(frame, text="Selecionar PDF", command=chamar_processar_pdf, font=("Arial", 12), bg='#007BFF', fg='white')
-select_pdf_button.pack(side="left", padx=10)
-
-# Botão para sair
-exit_button = tk.Button(frame, text="Sair", command=root.quit, font=("Arial", 12), bg='#FF4500', fg='white')
-exit_button.pack(side="right", padx=10)
+select_pdf_button = tk.Button(root, text="Selecionar PDF", command=chamar_processar_pdf, font=("Arial", 12), bg='#007BFF', fg='white')
+select_pdf_button.pack()
 
 root.mainloop()
